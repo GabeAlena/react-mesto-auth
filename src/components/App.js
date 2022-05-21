@@ -1,5 +1,6 @@
 import React from 'react';
 import { api } from '../utils/api.js';
+import { Route, Routes, useNavigate } from 'react-router-dom';
 import Header from './Header';
 import Main from './Main';
 import Footer from './Footer';
@@ -8,7 +9,14 @@ import ImagePopup from './ImagePopup';
 import EditProfilePopup from './EditProfilePopup';
 import EditAvatarPopup from './EditAvatarPopup';
 import AddPlacePopup from './AddPlacePopup';
+import Register from './Register';
+import Login from './Login';
+import InfoTooltip from './InfoTooltip';
+import ProtectedRoute from './ProtectedRoute';
 import { CurrentUserContext } from '../contexts/CurrentUserContext';
+import * as auth from '../utils/auth.js';
+import successImage from '../images/success.svg';
+import failImage from '../images/fail.svg';
 
 function App() {
     const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = React.useState(false);
@@ -16,10 +24,75 @@ function App() {
     const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = React.useState(false);
     const [selectedCard, setSelectedCard] = React.useState({isOpen : false});
     const [cards, setCards] = React.useState([]);
-
     const [currentUser, setCurrentUser] = React.useState({});
+    const navigate = useNavigate();
+    const [isLoggedIn, setIsLoggedIn] = React.useState(false);
+    const [userEmail, setUserEmail] = React.useState('');
+    const [infoTooltip, setInfoTooltip] = React.useState(false);
+    const [infoTooltipImage, setInfoTooltipImage] = React.useState('');
+    const [infoTooltilMessage, setInfoTooltipMessage] = React.useState('');
+
+    function handleRegister({email, password}) {
+      auth.register(email, password)
+          .then((response) => {
+            setUserEmail(response.data.email);
+            console.log(email);
+            setInfoTooltipImage(successImage);
+            setInfoTooltipMessage("Вы успешно зарегистрировались!");
+            if (response) {
+              navigate('/sign-in');
+              return response.json;
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+            setInfoTooltipImage(failImage);
+            setInfoTooltipMessage("Что-то пошло не так! Попробуйте ещё раз.");
+          })
+          .finally(handleInfoTooltip);
+    }
+
+    function handleLogin({email, password}) {
+      auth.login(email, password)
+          .then((response) => {
+            console.log(response);
+            localStorage.setItem('jwt', response.token);
+            setIsLoggedIn(true);
+            setUserEmail(email);
+            navigate('/');             
+          })
+          .catch((err) => {
+            console.log(err);
+          })
+    }
+
+    const checkToken = () => {
+      const jwt = localStorage.getItem('jwt');
+      if (jwt) {
+        auth.checkToken(jwt)
+            .then((response) => {
+                setUserEmail(response.email);
+                setIsLoggedIn(true);
+                navigate('/');             
+            })
+            .catch((err) => {
+              console.log(err);
+            })
+      }
+    }
+
+    function handleInfoTooltip(){
+      setInfoTooltip(true);
+    }
+
+    const handleSignOut = () => {
+      localStorage.removeItem('jwt');
+      setIsLoggedIn(false);
+      navigate('/sign-in');
+    }
 
     React.useEffect(() => {
+      if (isLoggedIn)
         Promise.all([api.getUserInfo(), api.getInitialCards()])
           .then(([userInfo, cardsList]) => {
             setCurrentUser(userInfo);
@@ -27,9 +100,13 @@ function App() {
           })
           .catch((err) => {
               console.log(err);
-          })
-    }, []);
-        
+          });
+    }, [isLoggedIn])
+    
+    React.useEffect(() => {
+        checkToken();
+    }, [])
+
     function handleCardClick(card) {
         card.isOpen = true;
         setSelectedCard(card)
@@ -74,6 +151,7 @@ function App() {
         setIsEditProfilePopupOpen(false);
         setIsAddPlacePopupOpen(false);
         setSelectedCard({isOpen : false});
+        setInfoTooltip(false);
     }
 
     function handleUpdateUser({ name, about }) {
@@ -117,17 +195,33 @@ function App() {
 
     return (
       <CurrentUserContext.Provider value={currentUser}>
-          <Header />
-          <Main 
-              onEditAvatar={handleEditAvatarClick} 
-              onEditProfile={handleEditProfileClick} 
-              onAddPlace={handleAddPlaceClick} 
-              cards={cards}
-              onCardClick={handleCardClick}
-              onCardLike={handleCardLike}
-              onCardDelete={handleCardDelete}
-          />
-          <Footer />
+          <Header email={userEmail} isLoggedIn={isLoggedIn} handleSignOut={handleSignOut} />
+
+          <Routes>
+              <Route path="/sign-up" element={
+                  <Register onRegister={handleRegister} />
+              }/>
+
+              <Route path="/sign-in" element={
+                  <Login onLogin={handleLogin} />
+              }/>
+
+              <Route path="/" exact element={
+                  <ProtectedRoute isLoggedIn={isLoggedIn}>
+                      <Main
+                          onEditAvatar={handleEditAvatarClick} 
+                          onEditProfile={handleEditProfileClick} 
+                          onAddPlace={handleAddPlaceClick} 
+                          cards={cards}
+                          onCardClick={handleCardClick}
+                          onCardLike={handleCardLike}
+                          onCardDelete={handleCardDelete}
+                      />
+                      <Footer />
+                  </ProtectedRoute>
+              }/>
+
+          </Routes>
 
           <EditAvatarPopup 
               isOpen={isEditAvatarPopupOpen} 
@@ -156,6 +250,13 @@ function App() {
               name="delete-card" 
               title="Вы уверены?" 
               textButton="Да"
+          />
+
+          <InfoTooltip 
+              isOpen={infoTooltip}
+              image={infoTooltipImage}
+              message={infoTooltilMessage}
+              onClose={closeAllPopups}
           />
       </CurrentUserContext.Provider>
     );

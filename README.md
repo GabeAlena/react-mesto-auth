@@ -1,70 +1,37 @@
-# Getting Started with Create React App
+# Проект №12: React-mesto-auth
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Данный сайт это сервис Mesto: интерактивная страница, куда можно добавлять фотографии, удалять их и ставить лайки. 
+Сайт создан при помощи библиотеки реакт. В данной версии сайта данные карточек и профиля приходят с сервера. 
+Сайт состоит из следующих блоков: **header**,  **profile**, **elements**, **footer**. 
 
-## Available Scripts
+Блок **profile** содержит данные пользователя, где при клике на значок "редактирования профиля" вылезает попап окно. Данное всплывающее окно содержит кнопку submit, которая дает возможность редактировать данные профиля, а также кнопку крестик, которая дает возможность закрыть попап окно без редактирования профиля.
 
-In the project directory, you can run:
+Блок **elements** представляет из себя грид-контейнер с фотографиями различных мест России. Появление карточек с фотографиями реализовано при помощи запроса к серверу. Также в этом блоке реализован эффект hover при наведении курсора мыши на сердечко под фото, а также при наведении на элемент "trash".
 
-### `npm start`
+На сайте реализована возможность открытия попапа с картинкой любой карточки и закрытие кликом на крестик.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+Сайт адаптирован под следующие размерешения страницы: *320px*, *768px*, *1024px* и *1280px*. То есть компоненты сайта изменяются при увеличении/уменьшении размеров страницы. 
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+В вёрстке проекта построена файловая структура по БЭМ.
 
-### `npm test`
+Код JS, по сравнению с работой №9, разбит на функциональные компоненты **App**, **Card**, **Footer**, **PopupWithForm**, **ImagePopup**, **Header** и **Main**. 
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Класс **Api** хранит в себе все запросы к серверу. Он имеет конструктор и методы работы с API. Информация о пользователе подгружается с сервера при помощи GET-запроса на URL. Начальные карточки также подгружаются с сервера при помощи GET-запроса. Отредактированные данные профиля сохраняются на сервере (обновляются) при помощи метода PATCH. Добавление новой карточки на сервер реализовано при помощи POST-запроса. Для удаления карточки используется DELETE-запрос с указанием id нужной карточки. Постановка и снятие лайка реализованы при помощи PUT-запроса и DELETE-запроса. Обновление аватара пользователя - при помощи PATCH-запроса.
 
-### `npm run build`
+**App** - является главным функциональным компонентом приложения, который включает в себя все остальные компоненты. В нем содержаться хуки useState, управляющие внутренним состоянием попапов.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+В данной работе реализована регистрация и авторизация на сайте. Функциональность приложения доступна только авторизованным пользователям по роуту - /. Для неавторизованных пользователей реализованы роуты для регистрации - /sign-up и для авторизации - /sign-in. Реализовано подключение сайта к бэкенду, а также реализована аутентификация пользователя. Настроена работа с localStorage так, что в нем сохраняется токен.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Созданы компоненты **Login**, **Register**, **ProtectedRoute** и **InfoTooltip**.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+**Login** - компонент авторизации пользователя.
 
-### `npm run eject`
+**Register** - компонент регистрации пользователя.
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+**ProtectedRoute** - HOC компонент для защиты главного роута /.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+**InfoTooltip** - компонент модального окна, который информирует пользователя об успешной (или не очень) авторизации.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+Сборка проекта реализуется при помощи вебпака.
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Ссылка на данный проект на сайте GitHub Pages: https://gabealena.github.io/react-mesto-auth/.

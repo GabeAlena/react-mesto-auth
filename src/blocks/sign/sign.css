@@ -1,0 +1,21 @@
+.sign {
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  justify-content: center;
+  align-items: center;
+  color: #FFFFFF;
+}
+
+@media screen and (max-width: 320px){
+  .sign {
+    padding-left: 19px;
+    padding-right: 19px;
+    max-width: 280px;
+  }
+}
