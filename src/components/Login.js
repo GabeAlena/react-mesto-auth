@@ -1,7 +1,7 @@
-import React from 'react';
+import { useState } from 'react';
 
 function Login({ onLogin }) {
-    const [inputs, setInputs] = React.useState({email: '', password: ''});
+    const [inputs, setInputs] = useState({email: '', password: ''});
 
     const handleChange = (e) => {
         const {name, value} = e.target;

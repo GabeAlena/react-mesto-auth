@@ -1,4 +1,4 @@
-import React from 'react';
+import { useEffect, useState } from 'react';
 import { api } from '../utils/api.js';
 import { Route, Routes, useNavigate } from 'react-router-dom';
 import Header from './Header';
@@ -19,18 +19,18 @@ import successImage from '../images/success.svg';
 import failImage from '../images/fail.svg';
 
 function App() {
-    const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = React.useState(false);
-    const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = React.useState(false);
-    const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = React.useState(false);
-    const [selectedCard, setSelectedCard] = React.useState({isOpen : false});
-    const [cards, setCards] = React.useState([]);
-    const [currentUser, setCurrentUser] = React.useState({});
+    const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = useState(false);
+    const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = useState(false);
+    const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = useState(false);
+    const [selectedCard, setSelectedCard] = useState({isOpen : false});
+    const [cards, setCards] = useState([]);
+    const [currentUser, setCurrentUser] = useState({});
     const navigate = useNavigate();
-    const [isLoggedIn, setIsLoggedIn] = React.useState(false);
-    const [userEmail, setUserEmail] = React.useState('');
-    const [infoTooltip, setInfoTooltip] = React.useState(false);
-    const [infoTooltipImage, setInfoTooltipImage] = React.useState('');
-    const [infoTooltilMessage, setInfoTooltipMessage] = React.useState('');
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [userEmail, setUserEmail] = useState('');
+    const [infoTooltip, setInfoTooltip] = useState(false);
+    const [infoTooltipImage, setInfoTooltipImage] = useState('');
+    const [infoTooltilMessage, setInfoTooltipMessage] = useState('');
 
     function handleRegister({email, password}) {
       auth.register(email, password)
@@ -62,8 +62,11 @@ function App() {
             navigate('/');             
           })
           .catch((err) => {
+            setInfoTooltipImage(failImage);
+            setInfoTooltipMessage("Что-то пошло не так! Попробуйте ещё раз.");
             console.log(err);
           })
+          .finally(handleInfoTooltip);
     }
 
     const checkToken = () => {
@@ -73,7 +76,7 @@ function App() {
             .then((response) => {
                 setUserEmail(response.email);
                 setIsLoggedIn(true);
-                navigate('/');             
+                navigate('/');        
             })
             .catch((err) => {
               console.log(err);
@@ -91,7 +94,7 @@ function App() {
       navigate('/sign-in');
     }
 
-    React.useEffect(() => {
+    useEffect(() => {
       if (isLoggedIn)
         Promise.all([api.getUserInfo(), api.getInitialCards()])
           .then(([userInfo, cardsList]) => {
@@ -103,7 +106,7 @@ function App() {
           });
     }, [isLoggedIn])
     
-    React.useEffect(() => {
+    useEffect(() => {
         checkToken();
     }, [])
 

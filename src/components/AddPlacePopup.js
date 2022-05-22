@@ -1,10 +1,10 @@
-import React from 'react';
+import { useEffect, useState } from 'react';
 import PopupWithForm from './PopupwithForm';
 
 function AddPlacePopup(props) {
-    const [card, setCard] = React.useState({})
+    const [card, setCard] = useState({})
 
-    React.useEffect(() => {
+    useEffect(() => {
         if (props.isOpen) {
             card.name = '';
             card.link ='';
